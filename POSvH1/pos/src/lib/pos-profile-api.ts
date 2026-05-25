@@ -1,0 +1,216 @@
+import { DOCTYPES } from '../data/doctypes';
+import { call, db } from './frappe-sdk';
+import { IS_WEBSITE_MODE } from './platform';
+
+// Limited fields response
+export interface PosProfileLimited {
+  pos_profile: string;
+  branch: string;
+  company: string;
+  waiter: string;
+  warehouse: string;
+  cashier: string;
+  print_format: string | null;
+  qz_print: number;
+  qz_host: string | null;
+  printer: string | null;
+  print_type: string;
+  tableAttention: number;
+  paid_limit: number;
+  disable_rounded_total: number;
+  enable_discount: number;
+  multiple_cashier: number;
+  owner: string;
+  edit_order_type?: number;
+}
+
+export interface PosProfileLimitedResponse {
+  message: PosProfileLimited;
+}
+
+interface RolePermission {
+  name: string;
+  owner: string;
+  creation: string;
+  modified: string;
+  modified_by: string;
+  docstatus: number;
+  idx: number;
+  role: string;
+  parent: string;
+  parentfield: string;
+  parenttype: string;
+  doctype: string;
+}
+
+// Full POS Profile response
+export interface PosProfileFull {
+  name: string;
+  owner: string;
+  creation: string;
+  modified: string;
+  modified_by: string;
+  docstatus: number;
+  idx: number;
+  company: string;
+  customer: string | null;
+  country: string;
+  disabled: number;
+  warehouse: string;
+  campaign: string | null;
+  company_address: string | null;
+  restaurant: string;
+  branch: string;
+  currency: string;
+  role_allowed_for_billing: RolePermission[];
+  role_restricted_for_table_order?: RolePermission[];
+  paid_limit?: number;
+}
+
+// Combined POS Profile with both limited and full fields
+export interface PosProfileCombined extends PosProfileFull {
+  // Add limited fields that don't exist in full profile
+  waiter: string;
+  cashier: string;
+  print_format: string | null;
+  qz_print: number;
+  qz_host: string | null;
+  printer: string | null;
+  print_type: string;
+  tableAttention: number;
+  paid_limit: number;
+  disable_rounded_total: number;
+  enable_discount: number;
+  multiple_cashier: number;
+  edit_order_type?: number;
+  view_all_status?: number;
+  custom_daily_pos_close?: number;
+}
+
+export interface Currency {
+  name: string;
+  symbol: string;
+  fraction: string;
+  fraction_units: number;
+  smallest_currency_fraction_value: number;
+  number_format: string;
+}
+
+export interface PosProfileFullResponse {
+  message: PosProfileFull;
+}
+
+function getWebsiteFallbackProfile(): PosProfileCombined {
+  return {
+    name: import.meta.env.VITE_POS_WEBSITE_PROFILE_NAME || 'WEB-POS',
+    owner: 'Administrator',
+    creation: '',
+    modified: '',
+    modified_by: 'Administrator',
+    docstatus: 0,
+    idx: 0,
+    company: import.meta.env.VITE_POS_WEBSITE_COMPANY || 'Demo Company',
+    customer: null,
+    country: import.meta.env.VITE_POS_WEBSITE_COUNTRY || 'Philippines',
+    disabled: 0,
+    warehouse: import.meta.env.VITE_POS_WEBSITE_WAREHOUSE || 'Stores - WEB',
+    campaign: null,
+    company_address: null,
+    restaurant: import.meta.env.VITE_POS_WEBSITE_RESTAURANT || 'Web Restaurant',
+    branch: import.meta.env.VITE_POS_WEBSITE_BRANCH || 'Main Branch',
+    currency: import.meta.env.VITE_POS_WEBSITE_CURRENCY || 'PHP',
+    role_allowed_for_billing: [
+      {
+        name: 'WEB-ROLE-1',
+        owner: 'Administrator',
+        creation: '',
+        modified: '',
+        modified_by: 'Administrator',
+        docstatus: 0,
+        idx: 1,
+        role: 'Cashier',
+        parent: 'WEB-POS',
+        parentfield: 'role_allowed_for_billing',
+        parenttype: 'POS Profile',
+        doctype: 'POS Profile User',
+      },
+    ],
+    role_restricted_for_table_order: [],
+    waiter: import.meta.env.VITE_POS_WEBSITE_WAITER || 'Web Waiter',
+    cashier: import.meta.env.VITE_POS_WEBSITE_CASHIER || 'Web Cashier',
+    print_format: null,
+    qz_print: 0,
+    qz_host: null,
+    printer: null,
+    print_type: 'Browser',
+    tableAttention: 15,
+    paid_limit: 20,
+    disable_rounded_total: 0,
+    enable_discount: 1,
+    multiple_cashier: 0,
+    edit_order_type: 1,
+    view_all_status: 1,
+    custom_daily_pos_close: 0,
+  };
+}
+
+export async function getPosProfileLimitedFields(): Promise<PosProfileLimited> {
+  const res = await call.get('ury.ury_pos.api.getPosProfile');
+  return res.message;
+}
+
+export async function getPosProfileFull(posProfileName: string): Promise<PosProfileFull> {
+  const doc = await db.getDoc(DOCTYPES.POS_PROFILE, posProfileName);
+  return doc;
+}
+
+export async function getCombinedPosProfile(): Promise<PosProfileCombined> {
+  if (IS_WEBSITE_MODE) {
+    return getWebsiteFallbackProfile();
+  }
+
+  // Get limited fields first
+  const limitedProfile = await getPosProfileLimitedFields();
+  console.log('limitedProfile', limitedProfile);
+  
+  // Get full profile using the pos_profile name from limited profile
+  const fullProfile = await getPosProfileFull(limitedProfile.pos_profile);
+  
+  // Merge both profiles
+  const combinedProfile: PosProfileCombined = {
+    ...fullProfile,
+    waiter: limitedProfile.waiter,
+    cashier: limitedProfile.cashier,
+    print_format: limitedProfile.print_format,
+    qz_print: limitedProfile.qz_print,
+    qz_host: limitedProfile.qz_host,
+    printer: limitedProfile.printer,
+    print_type: limitedProfile.print_type,
+    tableAttention: limitedProfile.tableAttention,
+    paid_limit: limitedProfile.paid_limit,
+    disable_rounded_total: limitedProfile.disable_rounded_total,
+    enable_discount: limitedProfile.enable_discount,
+    multiple_cashier: limitedProfile.multiple_cashier,
+    edit_order_type: limitedProfile.edit_order_type,
+  };
+
+  return combinedProfile;
+}
+
+export async function getCurrencyInfo(currencyCode: string): Promise<Currency> {
+  if (IS_WEBSITE_MODE) {
+    const upperCurrency = currencyCode.toUpperCase();
+
+    return {
+      name: upperCurrency,
+      symbol: upperCurrency === 'PHP' ? '₱' : upperCurrency === 'USD' ? '$' : upperCurrency,
+      fraction: upperCurrency === 'PHP' ? 'Centavo' : 'Cent',
+      fraction_units: 100,
+      smallest_currency_fraction_value: 0.01,
+      number_format: '#,###.##',
+    };
+  }
+
+  const doc = await db.getDoc(DOCTYPES.CURRENCY, currencyCode);
+  return doc;
+}
