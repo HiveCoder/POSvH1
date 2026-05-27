@@ -37,7 +37,7 @@ const TableSelectionDialog: React.FC<Props> = ({ onClose }) => {
 
       try {
         // Try to get rooms from local storage first
-        const sessionKey = `ury_rooms_${posProfile.branch}`;
+        const sessionKey = `hlr_rooms_${posProfile.branch}`;
         const cachedRooms = localStorage.getItem(sessionKey);
         
         if (cachedRooms) {

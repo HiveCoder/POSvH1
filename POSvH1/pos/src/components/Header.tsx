@@ -115,7 +115,7 @@ const Header = () => {
         <Link to="/" className="flex items-center gap-3">
             <img 
               src={IS_WEBSITE_MODE ? '/ury.ico' : '/assets/ury/pos/ury_pos.png'} 
-              alt="URY POS" 
+              alt="HLR POS" 
               className="h-10 w-auto"
             />
           </Link>

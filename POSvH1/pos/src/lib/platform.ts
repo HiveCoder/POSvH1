@@ -11,7 +11,7 @@ export const ROUTER_BASENAME = import.meta.env.VITE_POS_ROUTER_BASENAME || (IS_W
 export const WEBSITE_USER = {
   id: import.meta.env.VITE_POS_WEBSITE_USER || 'web-cashier@example.com',
   fullName: import.meta.env.VITE_POS_WEBSITE_FULL_NAME || 'Website Cashier',
-  roles: String(import.meta.env.VITE_POS_WEBSITE_ROLES || 'Cashier,URY Cashier')
+  roles: String(import.meta.env.VITE_POS_WEBSITE_ROLES || 'Cashier,HLR Cashier')
     .split(',')
     .map((role) => role.trim())
     .filter(Boolean),

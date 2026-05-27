@@ -46,7 +46,7 @@ export async function printOrder({ orderId, posProfile }: PrintOrderParams): Pro
       <div class="summary-row total"><span>Grand Total</span><strong>${formatCurrency(vatSplit.grossAmount)}</strong></div>
     `;
 
-    const companyName = 'URY RESTAURANT GROUP';
+    const companyName = 'HLR RESTAURANT GROUP';
     const companyTin = 'TIN: [ENTER TIN NUMBER]';
     const companyAddress = 'Address: [ENTER COMPLETE BUSINESS ADDRESS]';
     const orNumber = 'OR No.: [ENTER OFFICIAL RECEIPT NUMBER]';
@@ -225,7 +225,7 @@ export async function printOrder({ orderId, posProfile }: PrintOrderParams): Pro
     <section class="copy">
       <div class="header">
         <div>
-          <p class="brand">URY POS</p>
+          <p class="brand">HLR POS</p>
           <p class="meta">Invoice: ${title}</p>
           <p class="meta">Date: ${postingDate} ${postingTime}</p>
           <p class="sub-meta">Customer: ${order?.customer || 'Walk-in Customer'}</p>
@@ -263,7 +263,7 @@ export async function printOrder({ orderId, posProfile }: PrintOrderParams): Pro
     <section class="copy">
       <div class="header">
         <div>
-          <p class="brand">URY POS</p>
+          <p class="brand">HLR POS</p>
           <p class="meta">Invoice: ${title}</p>
           <p class="meta">Date: ${postingDate} ${postingTime}</p>
           <p class="sub-meta">Cashier: ${order?.cashier || '-'}</p>

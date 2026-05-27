@@ -175,7 +175,7 @@ export function downloadOwnerDailyReportXls(orders: ReportOrder[], dateLabel?: s
   </style>
 </head>
 <body>
-  <div class="title">URY POS Owner Daily Report</div>
+  <div class="title">HLR POS Owner Daily Report</div>
   <div class="meta">Report Date: ${reportDate}</div>
   <table>
     <thead>

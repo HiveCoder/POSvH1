@@ -44,7 +44,7 @@ const TableView = () => {
 
   const persistRoomCounts = useCallback((counts: Record<string, number>) => {
     if (!branch) return;
-    localStorage.setItem(`ury_room_counts_${branch}`, JSON.stringify(counts));
+    localStorage.setItem(`hlr_room_counts_${branch}`, JSON.stringify(counts));
   }, [branch]);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const TableView = () => {
       setError(null);
 
       try {
-        const sessionKey = `ury_rooms_${branch}`;
+        const sessionKey = `hlr_rooms_${branch}`;
         const cachedRooms = localStorage.getItem(sessionKey);
 
         if (cachedRooms) {
@@ -80,7 +80,7 @@ const TableView = () => {
 
   useEffect(() => {
     if (!branch || rooms.length === 0) return;
-    const cacheKey = `ury_room_counts_${branch}`;
+    const cacheKey = `hlr_room_counts_${branch}`;
     const cachedCounts = localStorage.getItem(cacheKey);
     let shouldFetch = true;
 
