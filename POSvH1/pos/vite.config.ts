@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
+    port: 5174,
     proxy: {
       '^/(app|api|assets|files)': {
         target: process.env.VITE_FRAPPE_BASE_URL || 'http://localhost:8000',

@@ -37,6 +37,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
       const response = await getLoggedUser();
       
       if (!response) {
+        set({ isLoading: false });
         if (!IS_WEBSITE_MODE) {
           // If no user is logged in, redirect to login
           window.location.href = '/login?redirect-to=%2Fpos';
